@@ -167,7 +167,18 @@ int main(int argc, char* argv[]) {
         printf("TCP src port = %d\n", ntohs(tcp_hdr->th_sport));
         printf("TCP des port = %d\n", ntohs(tcp_hdr->th_dport));
 
-        printf("\n");
+        int datalen = header->caplen - sizeof(struct libnet_ethernet_hdr) - sizeof(struct libnet_ipv4_hdr) - sizeof(struct libnet_tcp_hdr);
+
+        if (datalen > 10) {
+            datalen = 10;
+        }
+
+        printf("Payload hexadecimal value = ");
+        for (int i = 0; i < datalen; i++) {
+            printf("%02x ", packet[sizeof(struct libnet_ethernet_hdr) + sizeof(struct libnet_ipv4_hdr) + sizeof(struct libnet_tcp_hdr) + i]);
+        }
+
+        printf("\n\n");
     }
 
     pcap_close(pcap);
