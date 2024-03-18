@@ -149,21 +149,20 @@ int main(int argc, char* argv[]) {
             if(ntohs(eth_hdr->ether_type) != ETHERTYPE_IP)
                 continue;
         //printf("ETH type = %04x\n", ntohs(eth_hdr->ether_type));
-        struct libnet_ipv4_hdr *ip_hdr = ((struct libnet_ipv4_hdr* )packet + sizeof(struct libnet_ethernet_hdr));
+
+        struct libnet_ipv4_hdr *ip_hdr = (packet + sizeof(struct libnet_ethernet_hdr));
 
         if(ip_hdr->ip_p != IPPROTO_TCP)
             continue;
-        //printf("proto = %d\n", ip_hdr->ip_p);
-        struct libnet_tcp_hdr *tcp_hdr = ((struct libnet_tcp_hdr* )packet + sizeof(struct libnet_ipv4_hdr));
 
-        printf("TCP Packet Captured!!\n");
-        printf("%u bytes captured\n", header->caplen);
+        printf("TCP Packet %u bytes captured\n", header->caplen);
         printf("ETH src mac = %02x:%02x:%02x:%02x:%02x:%02x\n", eth_hdr->ether_shost[0], eth_hdr->ether_shost[1], eth_hdr->ether_shost[2], eth_hdr->ether_shost[3], eth_hdr->ether_shost[4], eth_hdr->ether_shost[5]);
         printf("ETH des mac = %02x:%02x:%02x:%02x:%02x:%02x\n", eth_hdr->ether_dhost[0],eth_hdr->ether_dhost[1], eth_hdr->ether_dhost[2],eth_hdr->ether_dhost[3],eth_hdr->ether_dhost[4],eth_hdr->ether_dhost[5]);
 
-        printf("IP src ll = %d.%d.%d.%d\n", (ip_hdr->ip_src.s_addr >> 24) & 0xFF, (ip_hdr->ip_src.s_addr >> 16) & 0xFF, (ip_hdr->ip_src.s_addr >> 8) & 0xFF, ip_hdr->ip_src.s_addr & 0xFF);
-        printf("IP src in = %s\n", inet_ntoa(ip_hdr->ip_src));//(ip_hdr->ip_src.s_addr >> 24) & 0xFF, (ip_hdr->ip_src.s_addr >> 16) & 0xFF, (ip_hdr->ip_src.s_addr >> 8) & 0xFF, ip_hdr->ip_src.s_addr & 0xFF);
-        printf("IP des = %d.%d.%d.%d\n", (ip_hdr->ip_dst.s_addr >> 24) & 0xFF, (ip_hdr->ip_dst.s_addr >> 16) & 0xFF, (ip_hdr->ip_dst.s_addr >> 8) & 0xFF, ip_hdr->ip_dst.s_addr & 0xFF);
+        printf("IP src = %s\n", inet_ntoa(ip_hdr->ip_src));
+        printf("IP des = %s\n", inet_ntoa(ip_hdr->ip_dst));
+
+        struct libnet_tcp_hdr *tcp_hdr = (packet + sizeof(struct libnet_ipv4_hdr) + sizeof(struct libnet_ethernet_hdr));
 
         printf("TCP src port = %d\n", ntohs(tcp_hdr->th_sport));
         printf("TCP des port = %d\n", ntohs(tcp_hdr->th_dport));
